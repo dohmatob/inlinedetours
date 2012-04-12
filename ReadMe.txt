@@ -294,28 +294,14 @@ installed in the first place!)
 3. Buiding
 ++++++++++
 
-I recommend you use ms visual studio (http://www.microsoft.com/visualstudio/en-us/try). 
-
-When you succeed, you should have a inlinedetours.lib under inlinedetours\Debug\ folder.
-
-3.1 Linking
-++++++++++++
-
-If this is the first time you are linking a static (.lib) library against client code, then you might want to checktout 
-this tutorial: http://msdn.microsoft.com/en-us/library/ms235627.aspx
-
-Include the inlinedetours.h header file in your project. Link inlinedetours into your code by doing something like:
-
-[snip]
-#pragma comment(lib, "inlinedetours.lib"). 
-[snip]
-
-Of, course inlinedetours.lib should be in your project's path! 
+These are Code::Blocks projects. So, build with codeblocks on windows. Alternatively, look at the  html log file 
+<project_name>_build_log.html of each project directory (inlinedetours, testdlls/basicproxy/, etc.) and extract the 
+command-lines (I) used in building the projects with codeblocks; then, use MINGW32 compiler to build.
 
 4. Compatibility
 ++++++++++++++++
 
-Should work on vista and 7.
+Should work on XP or later.
 
 
 (c) h4lf-jiffie (dohmatob elvis dopgima)
