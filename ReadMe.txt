@@ -21,8 +21,7 @@ Implement a built-in disam heuristic to automatically determine API prologs.
 ++++++++++++++++++
 
 To detour/hook --say-- the SleepEx API (from kernel32) in a target process X (i.e. subsequent calls to SleepEx made 
-from X will be routed to a proxy, etc.), you would code the following stubs in a DLL Y (excerpt from 
-https://github.com/half-jiffie/inlinedetoursclientdll/blob/master/inlinedetoursclientdll/inlinedetoursclientdll.cpp):
+from X will be routed to a proxy, etc.), you would code the following stubs in a DLL Y (excerpt from /basicproxy/main.cpp):
 
 [snip]
 DWORD (WINAPI *OriginalSleepEx)(DWORD, BOOL) = SleepEx; // original SleepEx API from kernel32
