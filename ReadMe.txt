@@ -80,7 +80,7 @@ the current score of the current player :):
 0x010196B6: ADD EDX, C4653600
 [snip]
 
-Say, we wanted hook the instruction (6 bytes) at 0x010196BE and do the following pre-treatment (which simple extracts 
+Say, we wanted hook the instruction (6 bytes) at 0x010196BE and do the following pre-treatment (which simply extracts 
 the current score and displays it):
 
 [snip]
