@@ -1,0 +1,43 @@
+# depslib dependency file v1.0
+1334003363 source:c:\users\rude-boi\code\basicproxy\main.cpp
+	"main.h"
+	"inlinedetours.h"
+
+1333998882 c:\users\rude-boi\code\basicproxy\main.h
+	<windows.h>
+	<stdio.h>
+	<tchar.h>
+
+1334228599 c:\users\rude-boi\code\inlinedetours\inlinedetours.h
+	"stdafx.h"
+
+1334187692 c:\users\rude-boi\code\inlinedetours\stdafx.h
+	<windows.h>
+	<winbase.h>
+	<stdlib.h>
+	<stdio.h>
+	<vector>
+	<TlHelp32.h>
+	<assert.h>
+
+1334003363 source:c:\users\rude-boi\code\inlinedetours\testdlls\basicproxy\main.cpp
+	"main.h"
+	"inlinedetours.h"
+
+1333998882 c:\users\rude-boi\code\inlinedetours\testdlls\basicproxy\main.h
+	<windows.h>
+	<stdio.h>
+	<tchar.h>
+
+1334228599 c:\users\rude-boi\code\inlinedetours\inlinedetours\inlinedetours.h
+	"stdafx.h"
+
+1334187692 c:\users\rude-boi\code\inlinedetours\inlinedetours\stdafx.h
+	<windows.h>
+	<winbase.h>
+	<stdlib.h>
+	<stdio.h>
+	<vector>
+	<TlHelp32.h>
+	<assert.h>
+

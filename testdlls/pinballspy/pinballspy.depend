@@ -1,0 +1,22 @@
+# depslib dependency file v1.0
+1334248680 source:c:\users\rude-boi\code\inlinedetours\testdlls\pinballspy\main.cpp
+	"main.h"
+
+1334237209 c:\users\rude-boi\code\inlinedetours\testdlls\pinballspy\main.h
+	<windows.h>
+	<stdio.h>
+	<tchar.h>
+	"inlinedetours.h"
+
+1334228599 c:\users\rude-boi\code\inlinedetours\inlinedetours\inlinedetours.h
+	"stdafx.h"
+
+1334187692 c:\users\rude-boi\code\inlinedetours\inlinedetours\stdafx.h
+	<windows.h>
+	<winbase.h>
+	<stdlib.h>
+	<stdio.h>
+	<vector>
+	<TlHelp32.h>
+	<assert.h>
+

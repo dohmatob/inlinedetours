@@ -1,0 +1,10 @@
+# git ignore file
+.exe
+*.o
+*.layout
+*.a
+*.dll
+*.def
+*~
+#*
+

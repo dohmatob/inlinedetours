@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>pinballspy build log</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+<body>
+<tt>
+Build started on: <u>12-04-2012 at 18:41.51</u><br />
+Build ended on: <u>12-04-2012 at 18:41.55</u><p />
+<b>-------------- Build: Debug in pinballspy ---------------</b><br />
+mingw32-g++.exe  -Wall -g -DBUILD_DLL    -IC:\Users\rude-boi\CODE\inlinedetours\inlinedetours  -c C:\Users\rude-boi\CODE\inlinedetours\testdlls\pinballspy\main.cpp -o obj\Debug\main.o<br />
+C:\Users\rude-boi\CODE\inlinedetours\testdlls\pinballspy\main.cpp: In function 'void DisplayScore()':<br />
+<font color="#0000ff">C:\Users\rude-boi\CODE\inlinedetours\testdlls\pinballspy\main.cpp:34: warning: format '%d' expects type 'int', but argument 3 has type 'DWORD'</font><br />
+C:\Users\rude-boi\CODE\inlinedetours\testdlls\pinballspy\main.cpp: At global scope:<br />
+<font color="#0000ff">C:\Users\rude-boi\CODE\inlinedetours\testdlls\pinballspy\main.cpp:41: warning: 'naked' attribute directive ignored</font><br />
+<font color="#0000ff">C:\Users\rude-boi\CODE\inlinedetours\inlinedetours/inlinedetours.h:52: warning: 'void MakeJmp(DWORD, DWORD, BYTE*)' declared 'static' but never defined</font><br />
+<font color="#0000ff">C:\Users\rude-boi\CODE\inlinedetours\inlinedetours/inlinedetours.h:53: warning: 'void* AllocateCodecave(DWORD)' declared 'static' but never defined</font><br />
+<font color="#0000ff">C:\Users\rude-boi\CODE\inlinedetours\inlinedetours/inlinedetours.h:54: warning: 'BOOL SuspendAllOtherThreads()' declared 'static' but never defined</font><br />
+<font color="#0000ff">C:\Users\rude-boi\CODE\inlinedetours\inlinedetours/inlinedetours.h:55: warning: 'BOOL ResumeAllOtherThreads()' declared 'static' but never defined</font><br />
+<font color="#0000ff">C:\Users\rude-boi\CODE\inlinedetours\inlinedetours/inlinedetours.h:56: warning: 'void EnterCriticalCodeSection()' declared 'static' but never defined</font><br />
+<font color="#0000ff">C:\Users\rude-boi\CODE\inlinedetours\inlinedetours/inlinedetours.h:57: warning: 'void LeaveCriticalCodeSection()' declared 'static' but never defined</font><br />
+mingw32-g++.exe -shared -Wl,--output-def=bin\Debug\libpinballspy.dll.def -Wl,--out-implib=bin\Debug\libpinballspy.dll.a -Wl,--dll  obj\Debug\main.o   -o bin\Debug\pinballspy.dll  -luser32 C:\Users\rude-boi\CODE\inlinedetours\inlinedetours\libinlinedetours.a<br />
+Creating library file: bin\Debug\libpinballspy.dll.a<br />
+Output size is 266,91 KB<br />
+<font color="#0000ff">Process terminated with status 0 (0 minutes, 3 seconds)</font><br />
+<font color="#0000ff">0 errors, 8 warnings</font><br />
+</tt>
+</body>
+</html>
