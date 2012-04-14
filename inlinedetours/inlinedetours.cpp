@@ -11,6 +11,24 @@ static std::vector<HANDLE> g_suspendedThreads;
 static CRITICAL_SECTION g_csCriticalCodeSection;
 static BOOL g_csCriticalCodeSectionInitialized = false;
 
+////////////////////////////////////////////////
+///
+void CreateConsole(const char *title, DWORD wAttributes)
+{
+	HANDLE hStd = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (0x1) //(!hStd)
+	{
+		AllocConsole();
+		hStd = GetStdHandle(STD_OUTPUT_HANDLE);
+		if (title)
+		  {
+		    SetConsoleTitle(_T(title));
+		  }
+		SetConsoleTextAttribute(hStd, wAttributes);
+	}
+	freopen("CONOUT$", "w", stdout);
+}
+
 /////////////////////////////////////////////////////////////////////
 // Function will attempt to find given signature in process memory
 /////////////////////////////////////////////////////////////////////

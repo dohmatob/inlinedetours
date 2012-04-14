@@ -9,22 +9,6 @@ typedef DWORD (WINAPI *SleepEx_t)(DWORD, BOOL);
 
 SleepEx_t g_OriginalSleepEx;
 
-//////////////////////////////////////////////
-// Creates console if process is GUI, etc.
-/////////////////////////////////////////////
-void CreateConsole(void)
-{
-	HANDLE hStd = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (!hStd)
-	{
-		AllocConsole();
-		hStd = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTitle(_T(__DLL_PSEUDO__));
-		SetConsoleTextAttribute(hStd, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-	}
-	freopen("CONOUT$", "w", stdout);
-}
-
 /////////////////////////////////////////////////////////////////
 // This hook is triggered whenever the SleepEx API is invoked
 ////////////////////////////////////////////////////////////////

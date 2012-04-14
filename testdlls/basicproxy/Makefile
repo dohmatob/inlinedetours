@@ -1,3 +1,24 @@
-all:
-	C:\Program Files\CodeBlocks\MinGW\bin\mingw32-g++.exe -Wall -DBUILD_DLL -g -c C:\Users\rude-boi\CODE\basicproxy\main.cpp -o obj\Debug\main.o
-	C:\Program Files\CodeBlocks\MinGW\bin\mingw32-g++.exe -shared -Wl,--output-def=bin\Debug\libbasicproxy.dll.def -Wl,--out-implib=bin\Debug\libbasicproxy.dll.a -Wl,--dll .\obj\Debug\main.o -o bin\Debug\basicproxy.dll --luser32
+ROOTDIR=..\..
+!include $(ROOTDIR)\testdlls\common.mak
+
+TESTEXECUTABLES=$(BINDIR)\sleepingbeauty.exe
+
+all: $(BINDIR)\basicproxy.dll clean
+
+$(BINDIR)\basicproxy.dll $(LIBDIR)\basicproxy.lib: main.obj $(DEPENDENCIES)
+     	$(CC) /LD $(CFLAGS) /Fe$@ /Fd$(BINDIR)\basicproxy.pdb \
+        main.obj \
+        /link $(LINKFLAGS) /incremental:no /subsystem:console \
+	/entry:$(DLLENTRY) \
+	/export:DllMain \
+        /export:HookSleepEx \
+	/export:UnhookSleepEx \
+        $(LIBRARIES)
+
+test: all $(TESTEXECUTABLES)
+	@echo +++++ -[ testing sleepingbeauty ]- +++++
+	$(BINDIR)\sleepingbeauty.exe $(BINDIR)\basicproxy.dll 5
+	
+clean:	
+	-del /Q *.obj 2>null # XXX quick-dirty-hack!
+
