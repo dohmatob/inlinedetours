@@ -2,25 +2,12 @@
 // (c) d0hm4t06 3. d0p91m4 (half-jiffie)
 //////////////////////////////////////////
 
-#include "main.h"
+#include "stdafx.h"
 
 DWORD dwCmpEdxAddr = 0;
 DWORD dwExtractScoreRetAddr;
 DWORD dwPreviousScore = 0;
 DWORD dwCurrentScore;
-
-void CreateConsole(void)
-{
-	HANDLE hStd = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (!hStd)
-	{
-		AllocConsole();
-		hStd = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTitle(_T(__DLL_PSEUDO__));
-		SetConsoleTextAttribute(hStd, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-	}
-	freopen("CONOUT$", "w", stdout);
-}
 
 ////////////////////////////////////////////////////////////////////////
 // This callback is invoked by ExtractScore to display current score
@@ -32,7 +19,7 @@ void DisplayScore(void)
 		printf("[%s] Game restarting ?\n", __DLL_PSEUDO__);
 	}
 	printf("[%s] Current score is %d.\n", __DLL_PSEUDO__, dwCurrentScore);
-	dwPreviousScore = dwCurrentScore;
+	dwPreviousScore = dwCurrentScore;	
 }
 
 ////////////////////////////////
@@ -40,27 +27,19 @@ void DisplayScore(void)
 ///////////////////////////////
 void __declspec(naked) ExtractScore(void)
 {
-	asm __volatile__(
-        "int3;"
-        "movl %%edx, %0;"
-        : "=r" (dwCurrentScore)
-        );
+	// backup edx (this contains the score :))
+	__asm mov dwCurrentScore, edx
 
-    asm __volatile__(
-         "pusha;"
-         "pushf;"
-         );
-    DisplayScore();
-    asm __volatile__(
-         "popf;"
-         "popa;"
-         );
+	// invoke handler
+	__asm pushad // save registers
+	__asm pushfd // save eflags 
+	DisplayScore(); // this will corrupt the current thread's context
+	__asm popfd // restore registers
+	__asm popad // restore eflags
 
-    asm __volatile__(
-        "jmp *%0;"
-        :
-        : "r" (dwExtractScoreRetAddr)
-        );
+	// finally
+	__asm push dwExtractScoreRetAddr // saved return address
+	__asm ret // return like a ninja
 }
 
 /////////////////////////////////////////////////////////////
@@ -88,7 +67,7 @@ void TrapScore(void)
 
 	// find pinball signature in process image
 	FindSignatureInProcessMemory(GetCurrentProcess(), (PBYTE)__PINBALL_SIGNATURE__, \
- 		strlen((const char *)__PINBALL_SIGNATURE__), hits, BadMbiFilterForPinballSignature);
+		strlen((const char *)__PINBALL_SIGNATURE__), hits, BadMbiFilterForPinballSignature);
 	if(hits.empty())
 	{
 		printf("[%s] Couldn't find pinball signature; process is certainly not a pinball session.\n", __DLL_PSEUDO__);
@@ -103,34 +82,10 @@ void TrapScore(void)
 	}
 
 	// detour installation proper
-	dwCmpEdxAddr = ((DWORD)*(hits.begin())) + 4;
+	dwCmpEdxAddr = ((DWORD)*(hits.begin())) + 4; 
 	InstallDetour((PVOID *)&dwCmpEdxAddr, (PVOID)ExtractScore, 0x6);
-	dwExtractScoreRetAddr = dwCmpEdxAddr;
+	dwExtractScoreRetAddr = dwCmpEdxAddr;	
 }
 
-BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
-                       LPVOID lpReserved
-                                         )
-{
-        switch (ul_reason_for_call)
-        {
-        case DLL_PROCESS_ATTACH:
-                DisableThreadLibraryCalls(hModule);
-                CreateConsole();
-                printf("[%s] Loaded.\n", __DLL_PSEUDO__);
-                break;
-        case DLL_THREAD_ATTACH:
-                break;
-        case DLL_THREAD_DETACH:
-                break;
-        case DLL_PROCESS_DETACH:
-                printf("[%s] Unloaded.\n", __DLL_PSEUDO__);
-                break;
-        default:
-                break;
-        }
-        return TRUE;
-}
 
 

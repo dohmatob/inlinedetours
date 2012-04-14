@@ -291,14 +291,8 @@ installed in the first place!)
 
 2) restoration: copy the last detour->dwOriginalOpcodes bytes of detour->pTrampoline2Target to pTarget
 
-3. Buiding
-++++++++++
 
-These are Code::Blocks projects. So, build with codeblocks on windows. Alternatively, look at the  html log file 
-<project_name>_build_log.html of each project directory (inlinedetours, testdlls/basicproxy/, etc.) and extract the 
-command-lines (I) used in building the projects with codeblocks; then, use MINGW32 compiler to build.
-
-4. Compatibility
+3. Compatibility
 ++++++++++++++++
 
 Should work on XP or later.

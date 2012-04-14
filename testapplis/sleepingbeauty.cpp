@@ -47,5 +47,9 @@ int main(int argc, char *argv[])
 	printf("[%s] SleepEx-ing %d milliseconds.\n", __MY_NAME__, dwDuration + 1000);
 	SleepEx(dwDuration + 1000, 0);
 	printf("[%s] Done.\n", __MY_NAME__);
+	
+	printf("[%s] Unloadin: %s\n", __MY_NAME__, argv[1]);
+	FreeLibrary(hDll);
+
 	return 0;
 }

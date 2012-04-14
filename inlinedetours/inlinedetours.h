@@ -45,10 +45,10 @@ typedef BOOL (WINAPI *BAD_MBI_FILTER)(MEMORY_BASIC_INFORMATION);
 ///////////////////////////
 // Function declarations
 //////////////////////////
-void FindSignatureInProcessMemory(HANDLE hProcess, PBYTE pSignature, DWORD dwSignature, std::vector<unsigned long>& hits, \
-	BAD_MBI_FILTER filter = 0);
-DWORD UninstallDetour(PVOID *ppTarget);
-DWORD InstallDetour(PVOID *ppTarget, PVOID pDetour, DWORD dwOrignalOpcodesSize);
+extern "C" void FindSignatureInProcessMemory(HANDLE hProcess, PBYTE pSignature, DWORD dwSignature, std::vector<unsigned long>& hits, BAD_MBI_FILTER filter = 0);
+extern "C" void CreateConsole(const char *title=0, DWORD wAttributes=FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+extern "C" DWORD UninstallDetour(PVOID *ppTarget);
+extern "C" DWORD InstallDetour(PVOID *ppTarget, PVOID pDetour, DWORD dwOrignalOpcodesSize);
 static void MakeJmp(DWORD dwSrcAddr, DWORD dwDstAddr, PBYTE pBuf);
 static PVOID AllocateCodecave(DWORD dwSize);
 static BOOL SuspendAllOtherThreads(void);

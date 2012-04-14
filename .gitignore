@@ -1,10 +1,16 @@
 # git ignore file
 .exe
 *.o
+*.obj
 *.layout
 *.a
+*.lib
 *.dll
 *.def
 *~
 #*
+*/null
+*.log
+*.depend
+*.cbp
 
