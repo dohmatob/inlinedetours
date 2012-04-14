@@ -10,7 +10,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls(hModule);
-		CreateConsole();
+		CreateConsole(__DLL_PSEUDO__);
 		printf("[%s] Loaded.\n", __DLL_PSEUDO__);
 		break;
 	case DLL_THREAD_ATTACH:
