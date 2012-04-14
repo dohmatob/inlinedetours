@@ -1,3 +1,4 @@
+
 //////////////////////////////////////////////
 // (c) h4lf-jiffie (dohmatob elvis dopgima)
 //     07/02/2012 Pessac - France
@@ -8,19 +9,6 @@
 #define __PATCH_SIZE__ 0x6
 
 PR_Write_t g_OriginalPR_Write; 
-
-void CreateConsole(void)
-{
-	HANDLE hStd = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (0x1) //(!hStd)
-	{
-		AllocConsole();
-		hStd = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTitle(_T(__DLL_PSEUDO__));
-		SetConsoleTextAttribute(hStd, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-	}
-	freopen("CONOUT$", "w", stdout);
-}
 
 void Log(const char *buf)
 {
