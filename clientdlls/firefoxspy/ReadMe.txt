@@ -59,18 +59,9 @@ Implement code to do some cool things in function Sniff(..).
 Inject the built .dll into firefox process, and invoke HookPR_Write(). I could have put this in the exported DllMain, but I 
 wanted to keep kiddies away. BTW, kiddies --surely!-- can't build this from source :).
 
-2. Dependencies
-+++++++++++++++
-- inlinedetours (see https://github.com/half-jiffie/inlinedetours/blob/master/inlinedetours/ReadMe.txt)
-- pcre library (see http://www.pcre.org/)
-
-3. Build
-+++++++++
-MS VS 2010 should do.
-
-4. Compatitibility
+2. Compatitibility
 ++++++++++++++++++
-Built (VS2010) and tested on windows 7; should work on xp and vista too. However, you'll need MSVCR (if you don't have it installed,
+Built and tested on windows 7; should work on xp and vista too. However, you'll need MSVCR (if you don't have it installed,
 you may simple copy  msvcp100.dll and msvcr100.dll from your system32 directory to your firefox installation directory).
 
 Good-Luck.
