@@ -1,6 +1,6 @@
 I have provided Makefiles to allow building using the nmake tool.
 
-To build everything (core, tests, sample clients, etc.) simple open a cmd-prompt and type:
+To build everything (core, tests, sample clients, etc.) simply open a command-prompt and type:
 	
 	nmake
 
