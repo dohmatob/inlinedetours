@@ -12,7 +12,7 @@ all:
 	cd $(MAKEDIR)
 
 clean:
-	cd $(MAKEDIR)\testapplis"
+	cd $(MAKEDIR)\testapplis
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS) clean
 	cd $(MAKEDIR)\testdlls"
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS) clean
