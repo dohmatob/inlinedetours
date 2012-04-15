@@ -1,4 +1,5 @@
-!include "system.mak"
+ROOTDIR=.
+!include "$(ROOTDIR)\system.mak"
 
 all:
 	cd $(MAKEDIR)\inlinedetours
@@ -10,6 +11,7 @@ all:
 	cd $(MAKEDIR)\clientdlls
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS)
 	cd $(MAKEDIR)
+	@echo +++++[ Build complete; check the $(BINDIR) and $(LIBDIR) folders ]+++++
 
 clean:
 	cd $(MAKEDIR)\testapplis

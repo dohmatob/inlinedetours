@@ -8,3 +8,6 @@ To build tests, type:
 
 	nmake test
 
+
+When you are done building, check the bin and lib folders.
+
