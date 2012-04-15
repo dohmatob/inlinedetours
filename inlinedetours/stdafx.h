@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
+#include <list>
 #include <TlHelp32.h>
 #include <assert.h>
 #include <tchar.h>

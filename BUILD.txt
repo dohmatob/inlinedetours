@@ -1,6 +1,10 @@
-I have provided Makefiles to allow building using the nmake tool.
+I have provided Makefiles to allow building using the nmake tool (from MS VC).
 
-To build everything (core, tests, sample clients, etc.) simply open a command-prompt and type:
+NB: To set the necessary environment variables (without which the build will certainly screw!), go to your VC (Visual C++)
+installation bin directory and run the vcvars32.bat script. Check http://msdn.microsoft.com/en-us/library/f2ccy3wt.aspx for
+more information on this.
+
+To build everything (inlinederous static lib itself, tests, sample clients, etc.) simply open a command-prompt and type:
 	
 	nmake
 
@@ -10,4 +14,6 @@ To build tests, type:
 
 
 When you are done building, check the bin and lib folders.
+
+(c) dohmatob elvis dopgima
 

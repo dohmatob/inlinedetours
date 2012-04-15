@@ -17,18 +17,18 @@
 #endif
 
 // GLOBALS
-static std::vector<detour_t> g_detours;
+static std::list<detour_t> g_detours;
 static std::vector<HANDLE> g_suspendedThreads;
 static CRITICAL_SECTION g_csCriticalCodeSection;
 static BOOL g_csCriticalCodeSectionInitialized = false;
 
-///////////////////////////////////////////////////////////////////////////
-/// This function creates a 'costumized' console for the client app/dll ///
-//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+// This function creates 'personalized' console for logging (say if the client app is GUI)
+/////////////////////////////////////////////////////////////////////////////////////////////
 void CreateConsole(const char *title, DWORD wAttributes)
 {
 	HANDLE hStd = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (0x1) //(!hStd)
+	if (0x1) //(!hStd) // XXX what the hell is this
 	{
 		AllocConsole();
 		hStd = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -257,11 +257,12 @@ DWORD UninstallDetour(PVOID *ppTarget)
 	// suspend all other threads; we run this thing!
 	SuspendAllOtherThreads();
 
-	_DEBUG_PRINTF("Searching for detour structure verifying \'detour->pTrampoline2Target == 0x%08X\'.\n", 
+	_DEBUG_PRINTF("Searching for detour structure verifying \'detour->pTrampoline2Target == 0x%08X\'.\n",
 		      (DWORD)*ppTarget);
 
 	// search corresponding detour, and then undo detour
-	for(std::vector<detour_t>::iterator detour = g_detours.begin(); detour != g_detours.end(); detour++)
+	std::list<detour_t>::iterator detour;
+	for(detour = g_detours.begin(); detour != g_detours.end(); detour++)
 	{
 		if (detour->pTrampoline2Target == *ppTarget)
 		{
@@ -289,7 +290,7 @@ DWORD UninstallDetour(PVOID *ppTarget)
 			_DEBUG_PRINTF("OK (protection restored)\n");
 			ResumeAllOtherThreads(); // resume all the other threads
 			_DEBUG_PRINTF("OK (uninstalled detour at 0x%08X).\n", detour->pTarget);
-			// g_detours.erase(detour); // delete detour from household
+			g_detours.erase(detour); // delete detour from household
 			LeaveCriticalSection(&g_csCriticalCodeSection); // leave critical section
 			return DETOUR_NOERROR; // OK
 		}
@@ -329,7 +330,7 @@ DWORD InstallDetour(PVOID *ppTarget, PVOID pDetour, DWORD dwOriginalOpcodes)
 
 	// verify that no other detoured pointer lies withing dwOriginalOpcodes bytes of the target *pTarget
 	_DEBUG_PRINTF("Making sure this detour doesn't override an earlier detour ..\n");
-	for(std::vector<detour_t>::iterator detour = g_detours.begin(); detour != g_detours.end(); detour++)
+	for(std::list<detour_t>::iterator detour = g_detours.begin(); detour != g_detours.end(); detour++)
 	{
 		if ((unsigned long)abs((long)((unsigned long)detour->pTarget - (unsigned long)*ppTarget)) < (unsigned long)dwOriginalOpcodes)
 		{
@@ -406,8 +407,8 @@ DWORD InstallDetour(PVOID *ppTarget, PVOID pDetour, DWORD dwOriginalOpcodes)
         // setup restoration stub
         *ppTarget = detour->pTrampoline2Target; // so we can undo the detour later
         _DEBUG_PRINTF("OK (detour built: detour->pTarget=0x%08X, tramopline->dwOriginalOpcodes=%d, "
-		      "detour->pDetour=0x%08X, detour->pTrampoline2Target=0x%08X).\n", (DWORD)detour->pTarget, 
-		      detour->dwOriginalOpcodes, 
+		      "detour->pDetour=0x%08X, detour->pTrampoline2Target=0x%08X).\n", (DWORD)detour->pTarget,
+		      detour->dwOriginalOpcodes,
 		      (DWORD)detour->pDetour, (DWORD)detour->pTrampoline2Target);
 
         // register new detour
@@ -423,4 +424,4 @@ DWORD InstallDetour(PVOID *ppTarget, PVOID pDetour, DWORD dwOriginalOpcodes)
         LeaveCriticalSection(&g_csCriticalCodeSection);
         _DEBUG_PRINTF("OK (installation complete).\n");
         return DETOUR_NOERROR;
-}	
+}
