@@ -2,8 +2,6 @@
 // (c) d0hm4t06 3. d0p91m4 (h4lf-jiffie)
 //////////////////////////////////////////
 
-#pragma once
-
 #include "stdafx.h"
 
 // ERROR CODES
