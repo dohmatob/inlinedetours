@@ -11,8 +11,4 @@
 #include <assert.h>
 #include <tchar.h>
 
-
-
 #define __LIB_PSEUDO__ "INLINE-DETOURS"
-
-
