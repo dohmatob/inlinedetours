@@ -4,9 +4,9 @@ ROOTDIR=.
 all:
 	cd $(MAKEDIR)\inlinedetours
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS)
-	cd $(MAKEDIR)\testapplis"
+	cd $(MAKEDIR)\testapplis
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS)
-	cd $(MAKEDIR)\testdlls"
+	cd $(MAKEDIR)\testdlls
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS)
 	cd $(MAKEDIR)\clientdlls
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS)
@@ -16,7 +16,7 @@ all:
 clean:
 	cd $(MAKEDIR)\testapplis
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS) clean
-	cd $(MAKEDIR)\testdlls"
+	cd $(MAKEDIR)\testdlls
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS) clean
 	cd $(MAKEDIR)\inlinedetours
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS) clean
@@ -25,7 +25,7 @@ clean:
 	cd $(MAKEDIR)
 
 test:
-	cd $(MAKEDIR)\testdlls"
+	cd $(MAKEDIR)\testdlls
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS) test
 	cd $(MAKEDIR)
 
