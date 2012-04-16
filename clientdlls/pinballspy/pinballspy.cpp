@@ -19,7 +19,7 @@ void DisplayScore(void)
 		printf("[%s] Game restarting ?\n", __DLL_PSEUDO__);
 	}
 	printf("[%s] Current score is %d.\n", __DLL_PSEUDO__, dwCurrentScore);
-	dwPreviousScore = dwCurrentScore;	
+	dwPreviousScore = dwCurrentScore;
 }
 
 ////////////////////////////////
@@ -32,7 +32,7 @@ void __declspec(naked) ExtractScore(void)
 
 	// invoke handler
 	__asm pushad // save registers
-	__asm pushfd // save eflags 
+	__asm pushfd // save eflags
 	DisplayScore(); // this will corrupt the current thread's context
 	__asm popfd // restore registers
 	__asm popad // restore eflags
@@ -63,28 +63,32 @@ BOOL WINAPI BadMbiFilterForPinballSignature(MEMORY_BASIC_INFORMATION mbi)
 /////////////////////////////////////////////////////////
 void TrapScore(void)
 {
-	std::vector<unsigned long> hits;
+	linkedlist_t *hits = new linkedlist_t; // this will hold addresses at which pinball signature if found
 
 	// find pinball signature in process image
 	FindSignatureInProcessMemory(GetCurrentProcess(), (PBYTE)__PINBALL_SIGNATURE__, \
 		strlen((const char *)__PINBALL_SIGNATURE__), hits, BadMbiFilterForPinballSignature);
-	if(hits.empty())
+	if(hits->empty())
 	{
 		printf("[%s] Couldn't find pinball signature; process is certainly not a pinball session.\n", __DLL_PSEUDO__);
 		return;
 	}
 
-	if (hits.size() > 1)
+	if (hits->dwSize > 1)
 	{
 		printf("[%s] Found pinball signature at %d addresses. The proposed signature is surely too short and thus very imprecise. "
-			"Can't continue.\n", __DLL_PSEUDO__, hits.size());
+			"Can't continue.\n", __DLL_PSEUDO__, hits->dwSize);
 		return;
 	}
 
 	// detour installation proper
-	dwCmpEdxAddr = ((DWORD)*(hits.begin())) + 4; 
+
+    // MOV DWORD PTR DS:[EAX], ESI
+    // MOV EDX, DWORD PTR DS:[EAX]
+    // CMP EDX, 3B9ACA00 <-- install detour at the begining of this instruction 6-byte instruction
+	dwCmpEdxAddr = (DWORD)(hits->head->data) + 4; // advance 4 bytes ahead
 	InstallDetour((PVOID *)&dwCmpEdxAddr, (PVOID)ExtractScore, 0x6);
-	dwExtractScoreRetAddr = dwCmpEdxAddr;	
+	dwExtractScoreRetAddr = dwCmpEdxAddr;
 }
 
 

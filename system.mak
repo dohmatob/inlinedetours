@@ -3,6 +3,10 @@ LIBDIR=$(ROOTDIR)\lib
 BINDIR=$(ROOTDIR)\bin
 INCDIR=$(ROOTDIR)\inlinedetours
 
+# minimal CFLAGS
+CFLAGS=
+
+# minimal LINKFLAGS
 LINKFLAGS=/Debug
 
 .cpp{$(OBJDIR)}.obj:

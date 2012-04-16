@@ -17,8 +17,8 @@
 #endif
 
 // GLOBALS
-static std::list<detour_t> g_detours;
-static std::vector<HANDLE> g_suspendedThreads;
+static linkedlist_t *g_detours = new linkedlist_t;
+static linkedlist_t *g_suspendedThreads = new linkedlist_t;
 static CRITICAL_SECTION g_csCriticalCodeSection;
 static BOOL g_csCriticalCodeSectionInitialized = false;
 
@@ -44,7 +44,7 @@ void CreateConsole(const char *title, DWORD wAttributes)
 /////////////////////////////////////////////////////////////////////
 // Function will attempt to find given signature in process memory
 /////////////////////////////////////////////////////////////////////
-void FindSignatureInProcessMemory(HANDLE hProcess, PBYTE pSignature, DWORD dwSignature, std::vector<unsigned long>& hits, \
+void FindSignatureInProcessMemory(HANDLE hProcess, PBYTE pSignature, DWORD dwSignature, linkedlist_t* hits, \
 	BAD_MBI_FILTER BadMbiFilter)
 {
 	// local variables
@@ -115,13 +115,13 @@ void FindSignatureInProcessMemory(HANDLE hProcess, PBYTE pSignature, DWORD dwSig
 				{
 					_DEBUG_PRINTF("Found '%s' at 0x%08X (mbi.State = 0x%08X, mbi.Protect = 0x%08X, mbi.Type = 0x%08X).\n",\
 							pSignature, i + dwBlockOffset, mbi.State, mbi.Protect, mbi.Type);
-					hits.push_back(i + dwBlockOffset); // store new result
+					hits->AddNode(ADT(i + dwBlockOffset)); // store new result
 				}
 			} // end 'for i'
 		} // end 'for dwBlockOffset'
 		dwStartOffset += mbi.RegionSize; // progress one memory block forward
 	} // end 'while'
-	_DEBUG_PRINTF("OK (found %d occurrences).\n", hits.size());
+	_DEBUG_PRINTF("OK (found %d occurrences).\n", hits->dwSize);
 	delete []pTmpBuf;
 	CloseHandle(hProcess);
 	return;
@@ -178,10 +178,10 @@ BOOL SuspendAllOtherThreads(void)
 				}
 				_DEBUG_PRINTF("OK.\n");
 				SuspendThread(hThread); /// XXX TODO: error-checking (this may fail --No?)
-				g_suspendedThreads.push_back(hThread);
+				g_suspendedThreads->AddNode(hThread);
 			}
 		} while (Thread32Next(hSnapshot, &te32));
-		_DEBUG_PRINTF("OK (suspended %d threads).\n", g_suspendedThreads.size());
+		_DEBUG_PRINTF("OK (suspended %d threads).\n", g_suspendedThreads->dwSize);
 		SetThreadPriority(GetCurrentThread(), oldPriority); // restore original thread priority
 		return true;
 	}
@@ -199,18 +199,20 @@ BOOL SuspendAllOtherThreads(void)
 BOOL ResumeAllOtherThreads(void)
 {
 	// local variables
+	node_t *conductor;
 	DWORD dwResumedThreads = 0;
-	DWORD dwSuspendedThreads = g_suspendedThreads.size();
+	DWORD dwSuspendedThreads = g_suspendedThreads->dwSize;
 	int oldPriority = GetThreadPriority(GetCurrentThread());
 
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL); // we are in some serious business here, please!
 	_DEBUG_PRINTF("Resuming all other threads ..\n", dwSuspendedThreads);
 
 	// traverse list of suspended threads, try resuming them as you go along
-	for(std::vector<HANDLE>::iterator thi = g_suspendedThreads.begin(); thi != g_suspendedThreads.end(); thi++)
+    TRAVERSE_LL(g_suspendedThreads, conductor)
 	{
-		ResumeThread(*thi);
-		CloseHandle(*thi);
+	    HANDLE th = (HANDLE)conductor->data;
+		ResumeThread(th);
+		CloseHandle(th);
 		dwResumedThreads++;
 	}
 	if (dwResumedThreads < dwSuspendedThreads)
@@ -224,7 +226,7 @@ BOOL ResumeAllOtherThreads(void)
 	}
 
 	// sanity
-	g_suspendedThreads.clear();
+	g_suspendedThreads->Free();
 	SetThreadPriority(GetCurrentThread(), oldPriority);
 	return dwResumedThreads == dwSuspendedThreads;
 }
@@ -242,6 +244,8 @@ DWORD UninstallDetour(PVOID *ppTarget)
 {
 	// local variables
 	DWORD protection;	// memory protection
+	node_t *conductor;	// linked-list walker
+	detour_t *detour;	// this will hold conductor's data, to avoid a proliferation of casts!
 
 	// initialize ..
 	if (!g_csCriticalCodeSectionInitialized)
@@ -261,9 +265,9 @@ DWORD UninstallDetour(PVOID *ppTarget)
 		      (DWORD)*ppTarget);
 
 	// search corresponding detour, and then undo detour
-	std::list<detour_t>::iterator detour;
-	for(detour = g_detours.begin(); detour != g_detours.end(); detour++)
+	TRAVERSE_LL(g_detours, conductor)
 	{
+	    detour = (detour_t *)conductor->data;
 		if (detour->pTrampoline2Target == *ppTarget)
 		{
 			// we got a hit; do housekeeping
@@ -289,8 +293,8 @@ DWORD UninstallDetour(PVOID *ppTarget)
 			VirtualProtect(detour->pTarget, detour->dwOriginalOpcodes, protection, &protection);
 			_DEBUG_PRINTF("OK (protection restored)\n");
 			ResumeAllOtherThreads(); // resume all the other threads
+			g_detours->DeleteNode(detour);
 			_DEBUG_PRINTF("OK (uninstalled detour at 0x%08X).\n", detour->pTarget);
-			g_detours.erase(detour); // delete detour from household
 			LeaveCriticalSection(&g_csCriticalCodeSection); // leave critical section
 			return DETOUR_NOERROR; // OK
 		}
@@ -309,8 +313,9 @@ DWORD UninstallDetour(PVOID *ppTarget)
 DWORD InstallDetour(PVOID *ppTarget, PVOID pDetour, DWORD dwOriginalOpcodes)
 {
 	// local variables
-	detour_t *detour;	// will encapsulate target, detour, plus detour data
 	DWORD protection;			// memory protection
+	node_t *conductor;	// linked-list walker
+	detour_t *detour;	// this will hold conductor's data, to avoid a proliferation of casts!
 
 	// initialize ..
 	if (!g_csCriticalCodeSectionInitialized)
@@ -330,8 +335,10 @@ DWORD InstallDetour(PVOID *ppTarget, PVOID pDetour, DWORD dwOriginalOpcodes)
 
 	// verify that no other detoured pointer lies withing dwOriginalOpcodes bytes of the target *pTarget
 	_DEBUG_PRINTF("Making sure this detour doesn't override an earlier detour ..\n");
-	for(std::list<detour_t>::iterator detour = g_detours.begin(); detour != g_detours.end(); detour++)
+	//for(std::list<detour_t>::iterator detour = g_detours.begin(); detour != g_detours.end(); detour++)
+	TRAVERSE_LL(g_detours, conductor)
 	{
+	    detour = (detour_t *)conductor->data;
 		if ((unsigned long)abs((long)((unsigned long)detour->pTarget - (unsigned long)*ppTarget)) < (unsigned long)dwOriginalOpcodes)
 		{
 		  _DEBUG_PRINTF("Error: InstallDetour: this detour would override an existing placed at 0x%08X; operation has been cancelled.\n", detour->pTarget);
@@ -412,7 +419,7 @@ DWORD InstallDetour(PVOID *ppTarget, PVOID pDetour, DWORD dwOriginalOpcodes)
 		      (DWORD)detour->pDetour, (DWORD)detour->pTrampoline2Target);
 
         // register new detour
-        g_detours.push_back(*detour);
+        g_detours->AddNode(detour);
 
         // restore memory protection tweaked earlier
         _DEBUG_PRINTF("Restoring protection on target memory.\n");
