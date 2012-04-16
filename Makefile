@@ -1,7 +1,7 @@
 ROOTDIR=.
 !include "$(ROOTDIR)\system.mak"
 
-all:
+all: 
 	cd $(MAKEDIR)\inlinedetours
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS)
 	cd $(MAKEDIR)\testapplis
@@ -24,7 +24,7 @@ clean:
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS) clean
 	cd $(MAKEDIR)
 
-test:
+test: all
 	cd $(MAKEDIR)\testdlls
 	@$(MAKE) /NOLOGO /$(MAKEFLAGS) test
 	cd $(MAKEDIR)
