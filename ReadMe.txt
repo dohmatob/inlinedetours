@@ -21,7 +21,8 @@ Implement a built-in disam heuristic to automatically determine API prologs.
 ++++++++++++++++++
 
 To detour/hook --say-- the SleepEx API (from kernel32) in a target process X (i.e. subsequent calls to SleepEx made 
-from X will be routed to a proxy, etc.), you would code the following stubs in a DLL Y (excerpt from /basicproxy/main.cpp):
+from X will be routed to a proxy, etc.), you would code the following stubs in a DLL Y (excerpt from 
+testdlls\basicproxy\main.cpp):
 
 [snip]
 DWORD (WINAPI *OriginalSleepEx)(DWORD, BOOL) = SleepEx; // original SleepEx API from kernel32
@@ -81,23 +82,9 @@ the current score of the current player :):
 [snip]
 
 Say, we wanted hook the instruction (6 bytes) at 0x010196BE and do the following pre-treatment (which simply extracts 
-the current score and displays it):
+the current score and displays it). Then, we'd simply code the following stub in a DLL Y:
 
-[snip]
-push dwExtractScoreRetAddr ; saved return address
-mov dwCurrentScore, edx ; backup edx (this contains the score :))
-pushad ; save general registers (EAX, EBX, EDX, ..)
-pushfd ; save flags (EFLAGS)
-call DisplayScore ; this will corrupt the current thread's context
-popfd ; restore general registers
-popad ; restore flags
-cmp edx, 0x3B9ACA00 ; this 6-byte instruction was patched away by detour
-ret ; return like a ninja
-[snip]
-
-Then, we'd simply code the following stub in a DLL Y:
-
-[snip excerpt from https://github.com/half-jiffie/pinballspy/blob/master/pinballspy/pinballspy.cpp]
+[snip excerpt from clientdlls\pinballspy\pinballspy.cpp]
 void __declspec(naked) ExtractScore(void) // naked, so we have neither prolog nor epilog stuff, just payload :)
 {
 	__asm push dwExtractScoreRetAddr // saved return address
@@ -140,7 +127,7 @@ version). The problem is that I don't have a the mozilla sdk (xulrunner-sdk, etc
 Indeed, this is not fiction, as it is usually the case in real-life (ask game-hackers, etc.). 
 
 Thus, my detour can't just be a wrapper around some OriginalFR_Write(??, ??, ??) like in the 1.0 case above  where we 
-detouring the kernel32.dll!SleepEx API. Thence, in my detour --alas!-- I'll need a way to do my 'thing' and then le 
+detoured the kernel32.dll!SleepEx API. Thence, in my detour --alas!-- I'll need a way to do my 'thing' and then let 
 PR_Write continue it's 'thing' past the bytes patched-off by the detour installer, without wrapping around anything 
 whatsoever.
 
@@ -236,8 +223,8 @@ Remarque: For the complete solution in context, please refer to https://github.c
 2.0 Technique: How does inlinedetours work?
 +++++++++++++++++++++++++++++++++++++++++++
 
-Invoking InstallDetour((PVOID *)&pTarget, PVOID pDetour, DWORD dwOriginalOpcodes) is intended to install a 
-dwOriginalOpcodes-byte detour at pTarget. Subsequent calls/references to pTarget will be routed to the detour 
+Invoking InstallDetour((PVOID *)&pTarget, PVOID pDetour, DWORD dwOriginalOpcodes) is intended to install a detour of size
+dwOriginalOpcodes bytes at pTarget. Subsequent calls/references to pTarget will be routed to the detour 
 pointed-to by pDetour. The lib achieves this as follows (type casts, error-checking, and thread-safety stripped):
 
 0) initialze .. (allocate codecaves, tweak virtual memory protections, etc.)
@@ -278,10 +265,14 @@ a detour?).
 
 5) There is no 5. That's it!
 
-A dictionary of all detour structures is maintained so detours can be subsequenty undone.
+Remarque: Observe that point 4) above provides for a function trap/proxy of the form 'target -> prehandler + target + 
+posthandler'.
+
+A dictionary of all detour structures (see the g_detours linked-list varibale in inlinedetours\inlinedetours.h) is 
+maintained so detours can be subsequenty undone.
 
 
-Likewsise, invoking UninstallDetour((PVOID *)&pTarget) is intended to undo a previous installed detour (i.e re-route the
+Likewise, invoking UninstallDetour((PVOID *)&pTarget) is intended to undo a previous installed detour (i.e re-route the
 original opcodes of the target). This is done back-end by the lib as follows:
 
 1) search for a detour with key = pTarget (if this search fails, then we're trying to undo a detour that was never 
