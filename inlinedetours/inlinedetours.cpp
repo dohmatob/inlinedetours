@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "inlinedetours.h"
 
-// XXX__VA_ARGS__ only exists under C99
+// XXX__VA_ARGS__ only exists under C99 standard
 #ifndef __QUIET__
 #define _DEBUG_PRINTF(...)				\
   {							\
