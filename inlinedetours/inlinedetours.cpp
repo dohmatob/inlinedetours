@@ -401,34 +401,33 @@ DWORD InstallDetour(PVOID *ppTarget, PVOID pDetour, DWORD dwOriginalOpcodes)
 	memcpy(detour->pTrampoline2Target, *ppTarget, dwOriginalOpcodes);
 	MakeJmp((DWORD)detour->pTrampoline2Target + dwOriginalOpcodes, (DWORD)detour->pTarget + dwOriginalOpcodes, \
 			detour->pTrampoline2Target + dwOriginalOpcodes);
-        FlushInstructionCache(GetCurrentProcess(), detour->pTrampoline2Target, dwOriginalOpcodes + 5);
-        printf("\t\t\tOK.\n");
+    FlushInstructionCache(GetCurrentProcess(), detour->pTrampoline2Target, dwOriginalOpcodes + 5);
+    _DEBUG_PRINTF("\t\t\tOK.\n");
 
-        // patch target with jmp
-        printf("\t\t\tWriting patch to target ..\n");
-        memset(*ppTarget, 0x90, dwOriginalOpcodes - 5); // NOP-sled
-        MakeJmp((DWORD)*ppTarget + dwOriginalOpcodes - 5, (DWORD)pDetour, (PBYTE)*ppTarget + dwOriginalOpcodes - 5);
-        FlushInstructionCache(GetCurrentProcess(), *ppTarget, dwOriginalOpcodes);
-        _DEBUG_PRINTF("\t\t\tOK (%d-byte patch writen to target at 0x%08X).\n", dwOriginalOpcodes, (DWORD)detour->pTarget);
+    // patch target with jmp
+    _DEBUG_PRINTF("\t\t\tWriting patch to target ..\n");
+    memset(*ppTarget, 0x90, dwOriginalOpcodes - 5); // NOP-sled
+    MakeJmp((DWORD)*ppTarget + dwOriginalOpcodes - 5, (DWORD)pDetour, (PBYTE)*ppTarget + dwOriginalOpcodes - 5);
+    FlushInstructionCache(GetCurrentProcess(), *ppTarget, dwOriginalOpcodes);
+    _DEBUG_PRINTF("\t\t\tOK (%d-byte patch writen to target at 0x%08X).\n", dwOriginalOpcodes, (DWORD)detour->pTarget);
 
-        // setup restoration stub
-        *ppTarget = detour->pTrampoline2Target; // so we can undo the detour later
-        _DEBUG_PRINTF("OK (detour built: detour->pTarget=0x%08X, tramopline->dwOriginalOpcodes=%d, "
-		      "detour->pDetour=0x%08X, detour->pTrampoline2Target=0x%08X).\n", (DWORD)detour->pTarget,
-		      detour->dwOriginalOpcodes,
-		      (DWORD)detour->pDetour, (DWORD)detour->pTrampoline2Target);
+    // setup restoration stub
+    *ppTarget = detour->pTrampoline2Target; // so we can undo the detour later
+    _DEBUG_PRINTF("OK (detour built: detour->pTarget=0x%08X, detour->dwOriginalOpcodes=%d, "
+                    "detour->pDetour=0x%08X, detour->pTrampoline2Target=0x%08X).\n", (DWORD)detour->pTarget,
+                    detour->dwOriginalOpcodes, (DWORD)detour->pDetour, (DWORD)detour->pTrampoline2Target);
 
-        // register new detour
-        g_detours->AddNode(detour);
+    // register new detour
+    g_detours->AddNode(detour);
 
-        // restore memory protection tweaked earlier
-        _DEBUG_PRINTF("Restoring protection on target memory.\n");
-        VirtualProtect(*ppTarget, dwOriginalOpcodes, protection, &protection);
-        _DEBUG_PRINTF("OK (protection restored)\n");
+    // restore memory protection tweaked earlier
+    _DEBUG_PRINTF("Restoring protection on target memory.\n");
+    VirtualProtect(*ppTarget, dwOriginalOpcodes, protection, &protection);
+    _DEBUG_PRINTF("OK (protection restored)\n");
 
-        // finish
-        ResumeAllOtherThreads();
-        LeaveCriticalSection(&g_csCriticalCodeSection);
-        _DEBUG_PRINTF("OK (installation complete).\n");
-        return DETOUR_NOERROR;
+    // finish
+    ResumeAllOtherThreads();
+    LeaveCriticalSection(&g_csCriticalCodeSection);
+    _DEBUG_PRINTF("OK (installation complete).\n");
+    return DETOUR_NOERROR;
 }
