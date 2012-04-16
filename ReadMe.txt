@@ -101,8 +101,7 @@ void __declspec(naked) ExtractScore(void) // naked, so we have neither prolog no
 void TrapScore(void)
 {
 	DWORD dwCmpEdxAddr = 0x010196BE; // target pointer
-	InstallDetour((PVOID *)&dwCmpEdxAddr, (PVOID)ExtractScore, 0x6); // '&' means 'address of', similarly to the ..
-									 // .. asm 'LEA' instruction
+	InstallDetour((PVOID *)&dwCmpEdxAddr, (PVOID)ExtractScore, 0x6);
 	dwExtractScoreRetAddr = dwCmpEdxAddr + 0x6; // = 0x010196C4 
 }
 
