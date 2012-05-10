@@ -45,6 +45,22 @@ void HookPR_Write(void)
 }
 [snip]
 
+BTW, sniffed data looks like this:
+
+>>>>>>>START OF BUFFER^M
+GET / HTTP/1.1^M
+Host: dohmatob.blogspot.fr^M
+User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0^M
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8^M
+Accept-Language: en-us,en;q=0.5^M
+Accept-Encoding: gzip, deflate^M
+Connection: keep-alive^M
+If-Modified-Since: Thu, 10 May 2012 17:20:21 GMT^M
+If-None-Match: "f824ad9a-c535-4033-b9c3-3228f442b6e2"^M
+^M
+^M
+END OF BUFFER<<<<<<<^M
+
 -1. DISCLAIMER
 ++++++++++++++
 This code is for educational purposes only. Don't use in production environment, or other assert. No warrantly is implied.
