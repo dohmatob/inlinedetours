@@ -217,7 +217,7 @@ void HookPR_Write(void)
 }
 [snip]
 
-Remarque: For the complete solution in context, please refer to https://github.com/half-jiffie/firefoxspy.
+Remarque: For the complete solution in context, please see [here](https://github.com/dohmatob/inlinedetours/tree/master/clientdlls/firefoxspy).
 
 2.0 Technique: How does inlinedetours work?
 +++++++++++++++++++++++++++++++++++++++++++
